@@ -43,6 +43,7 @@ export type Project = {
   description: string;
   tags: string[];
   link?: string;
+  apiLink?: string;
   repo?: string;
   category: "work" | "hobby";
 };
@@ -81,6 +82,7 @@ export const projects: Project[] = [
       "Full-stack app for browsing what's streaming across your favorite platforms, combining scraped and external API data. React/Redux frontend with a Rails API backend and async, Promise-based data fetching.",
     tags: ["React", "Redux", "Ruby on Rails", "PostgreSQL"],
     link: "https://river-wheat.vercel.app/",
+    apiLink: "https://river-api.herokuapp.com/",
     repo: "https://github.com/marsbhoward/river-frontend",
     category: "hobby",
   },

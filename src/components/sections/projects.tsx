@@ -42,6 +42,16 @@ function ProjectGrid({ items }: { items: Project[] }) {
                 Live site
               </a>
             )}
+            {project.apiLink && (
+              <a
+                href={project.apiLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline-offset-4 hover:underline"
+              >
+                API
+              </a>
+            )}
             {project.repo && (
               <a
                 href={project.repo}
