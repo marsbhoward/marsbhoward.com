@@ -80,7 +80,7 @@ export const projects: Project[] = [
     description:
       "Full-stack app for browsing what's streaming across your favorite platforms, combining scraped and external API data. React/Redux frontend with a Rails API backend and async, Promise-based data fetching.",
     tags: ["React", "Redux", "Ruby on Rails", "PostgreSQL"],
-    link: "https://river-app.herokuapp.com",
+    link: "https://river-wheat.vercel.app/",
     repo: "https://github.com/marsbhoward/river-frontend",
     category: "hobby",
   },
