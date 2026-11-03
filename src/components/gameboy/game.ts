@@ -6,6 +6,7 @@ import {
   MAP,
   BUILDINGS,
   ROVER_AT,
+  windowOf,
   drawText,
   buildSprites,
   buildMapCanvas,
@@ -17,7 +18,13 @@ export type DoorId = (typeof BUILDINGS)[number]["id"];
 
 type Building = (typeof BUILDINGS)[number];
 type Mode = "boot" | "play" | "dialog" | "entering" | "left";
-type Dialog = { pages: string[][]; page: number; shown: number };
+type Dialog = {
+  pages: string[][];
+  page: number;
+  shown: number;
+  // Runs if the player answers the last page with A.
+  onConfirm?: () => void;
+};
 type Entering = {
   building: Building;
   elapsed: number;
@@ -28,6 +35,7 @@ type Entering = {
 type GameOptions = {
   onDoor: (id: DoorId) => void;
   onBooted?: () => void;
+  onNightChoice?: (night: boolean) => void;
   skipBoot?: boolean;
   returnDoor?: DoorId | null;
   reducedMotion?: boolean;
@@ -69,16 +77,17 @@ const REDUCED_BOOT_MS = 1500;
 const DOOR_OPEN_MS = 180;
 const DOOR_WALK_MS = 420;
 const FADE_MS = 350;
+const NIGHT_MS = 600;
 
 const INTRO = [
   "BEEP BOOP! WELCOME, VISITOR! I'M ROVER.",
   "MARS IS A SOFTWARE ENGINEER.",
   "WALK THROUGH A DOOR TO LEARN MORE ABOUT MARS.",
   "PRESS A TO TALK OR READ.",
+  "TALK TO ME ANY TIME TO SWITCH DAY AND NIGHT.",
 ];
-const ROVER_TEXT = [
-  "DOORS: ABOUT, PROJECTS, RESUME AND GITHUB.",
-];
+const ROVER_ASK_NIGHT = "WANT ME TO MAKE IT NIGHT? A: YES. B: NO.";
+const ROVER_ASK_DAY = "WANT ME TO MAKE IT DAY? A: YES. B: NO.";
 const HELP = [
   "D-PAD: WALK. HOLD B: RUN. A: TALK, READ OR OPEN. SKIP: LEAVE THE GAME.",
 ];
@@ -124,6 +133,7 @@ export function createGame(
   {
     onDoor,
     onBooted,
+    onNightChoice,
     skipBoot = false,
     returnDoor = null,
     reducedMotion = false,
@@ -151,6 +161,8 @@ export function createGame(
   let fade = 0;
   let fadeSpeed = 0;
   let dialog: Dialog | null = null;
+  let night = false;
+  let nightLevel = 0;
   // Set once the player starts through a door, which is the end of the game.
   let entering: Entering | null = null;
   let clock = 0;
@@ -170,11 +182,12 @@ export function createGame(
     fadeSpeed = -1 / FADE_MS;
   }
 
-  function openDialog(paragraphs: string[]) {
+  function openDialog(paragraphs: string[], onConfirm?: () => void) {
     dialog = {
       pages: paginate(paragraphs),
       page: 0,
       shown: reducedMotion ? Infinity : 0,
+      onConfirm,
     };
     mode = "dialog";
   }
@@ -184,7 +197,7 @@ export function createGame(
     mode = "play";
   }
 
-  function advanceDialog() {
+  function advanceDialog(button: GameButton) {
     if (!dialog) return;
     const pageLength = dialog.pages[dialog.page].join("").length;
     if (dialog.shown < pageLength) {
@@ -193,8 +206,23 @@ export function createGame(
       dialog.page += 1;
       dialog.shown = reducedMotion ? Infinity : 0;
     } else {
+      const confirm = button === "a" ? dialog.onConfirm : undefined;
       closeDialog();
+      confirm?.();
     }
+  }
+
+  // The page owns the theme, so a choice goes out through `onNightChoice` and
+  // comes back here. It jumps when nobody could watch the change happen.
+  function setNight(value: boolean) {
+    night = value;
+    if (reducedMotion || mode === "boot" || fade > 0) nightLevel = value ? 1 : 0;
+  }
+
+  function askAboutNight() {
+    openDialog([night ? ROVER_ASK_DAY : ROVER_ASK_NIGHT], () =>
+      onNightChoice?.(!night),
+    );
   }
 
   function endBoot() {
@@ -229,7 +257,7 @@ export function createGame(
     const sign = signAt(x, y);
     if (door) enterDoor(door);
     else if (sign) openDialog([sign.sign]);
-    else if (roverAt(x, y)) openDialog(ROVER_TEXT);
+    else if (roverAt(x, y)) askAboutNight();
   }
 
   function press(button: GameButton) {
@@ -243,7 +271,7 @@ export function createGame(
       endBoot();
     } else if (mode === "dialog") {
       if (isDirection(button)) closeDialog();
-      else if (button === "a" || button === "b") advanceDialog();
+      else if (button === "a" || button === "b") advanceDialog(button);
     } else if (mode === "play" && !player.stepping) {
       if (button === "a") interact();
       if (button === "select") openDialog(HELP);
@@ -309,6 +337,10 @@ export function createGame(
   function update(dt: number) {
     clock += dt;
     fade = Math.min(1, Math.max(0, fade + fadeSpeed * dt));
+    nightLevel = Math.min(
+      1,
+      Math.max(0, nightLevel + ((night ? 1 : -1) * dt) / NIGHT_MS),
+    );
 
     if (mode === "boot") {
       bootElapsed += dt;
@@ -367,6 +399,25 @@ export function createGame(
         ctx.fillRect(x + 9 - phase * 2, y + 10, 4, 1);
       }
     });
+  }
+
+  function drawNight(camX: number, camY: number) {
+    if (nightLevel === 0) return;
+    // Hard steps, like the fade.
+    const level = Math.ceil(nightLevel * 4) / 4;
+    ctx.save();
+    ctx.globalAlpha = level;
+    ctx.globalCompositeOperation = "multiply";
+    ctx.fillStyle = "#40488c";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#f8d868";
+    BUILDINGS.forEach((building) => {
+      const { x, y } = windowOf(building);
+      ctx.fillRect(x - camX + 1, y - camY + 1, 7, 9);
+      ctx.fillRect(x - camX + 10, y - camY + 1, 7, 9);
+    });
+    ctx.restore();
   }
 
   function drawDialog() {
@@ -453,6 +504,8 @@ export function createGame(
       ctx.drawImage(frames[frame], spriteX, spriteY);
     }
 
+    drawNight(camX, camY);
+
     if (mode === "dialog") drawDialog();
 
     if (fade > 0) {
@@ -484,5 +537,5 @@ export function createGame(
     fadeIn();
   }
 
-  return { start, destroy, press, release, releaseAll, returnToTown };
+  return { start, destroy, press, release, releaseAll, returnToTown, setNight };
 }
