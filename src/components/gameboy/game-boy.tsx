@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useEffectEvent,
   useRef,
   useState,
   type MouseEvent,
@@ -10,6 +11,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { site } from "@/lib/data";
 import {
   createGame,
@@ -69,6 +71,7 @@ const LOGO = [
 
 export function GameBoy() {
   const router = useRouter();
+  const { resolvedTheme, setTheme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameRef = useRef<ReturnType<typeof createGame>>(null);
   const dpadDirection = useRef<Direction | null>(null);
@@ -94,6 +97,11 @@ export function GameBoy() {
     if (button !== "skip") gameRef.current?.release(button);
   }, []);
 
+  // `setTheme` changes identity with the theme, and that mustn't restart the game.
+  const chooseNight = useEffectEvent((night: boolean) => {
+    setTheme(night ? "dark" : "light");
+  });
+
   useEffect(() => {
     const game = createGame(canvasRef.current!, {
       skipBoot: session.booted,
@@ -105,6 +113,7 @@ export function GameBoy() {
       onBooted: () => {
         session.booted = true;
       },
+      onNightChoice: (night) => chooseNight(night),
       onDoor: (id) => {
         session.door = id;
         // Off-site, so the app router can't handle it. This runs after the door
@@ -155,6 +164,10 @@ export function GameBoy() {
       window.removeEventListener("pageshow", onPageShow);
     };
   }, [router, press, release]);
+
+  useEffect(() => {
+    gameRef.current?.setNight(resolvedTheme === "dark");
+  }, [resolvedTheme]);
 
   // Pointer input for A, B, Select and Skip. A keyboard "click" on a focused
   // button has detail 0, and is turned into a quick press and release.

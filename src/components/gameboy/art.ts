@@ -290,6 +290,12 @@ export const BUILDINGS = [
 
 export const ROVER_AT = { x: 8, y: 7 };
 
+// Top-left of a building's window frame, in map pixels.
+export const windowOf = (building: (typeof BUILDINGS)[number]) => ({
+  x: building.col * TILE + TILE * 2 + 6,
+  y: building.row * TILE + 48,
+});
+
 const px = (
   ctx: CanvasRenderingContext2D,
   color: string,
@@ -413,11 +419,11 @@ function paintBuilding(
   );
 
   // Window, to the right of the door
-  const windowX = x + TILE * 2 + 6;
-  px(ctx, "#181828", windowX, y + 48, 18, 11);
-  px(ctx, "#70c8f8", windowX + 1, y + 49, 16, 9);
-  px(ctx, "#181828", windowX + 8, y + 49, 2, 9);
-  px(ctx, "#f8f8f8", windowX + 2, y + 50, 3, 1);
+  const { x: windowX, y: windowY } = windowOf(building);
+  px(ctx, "#181828", windowX, windowY, 18, 11);
+  px(ctx, "#70c8f8", windowX + 1, windowY + 1, 16, 9);
+  px(ctx, "#181828", windowX + 8, windowY + 1, 2, 9);
+  px(ctx, "#f8f8f8", windowX + 2, windowY + 2, 3, 1);
 
   // Door
   const doorX = building.door.x * TILE;
