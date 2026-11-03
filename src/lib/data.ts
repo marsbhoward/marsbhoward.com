@@ -43,10 +43,14 @@ export type Project = {
   description: string;
   tags: string[];
   link?: string;
+  linkLabel?: string;
   apiLink?: string;
   repo?: string;
   category: "work" | "hobby";
 };
+
+const EQUIVALENCE_SHOWCASE =
+  "https://equivalence-showcase-production.up.railway.app/play/";
 
 export const projects: Project[] = [
   {
@@ -77,6 +81,15 @@ export const projects: Project[] = [
     category: "work",
   },
   {
+    title: "Equivalence",
+    description:
+      "A roguelike extraction game with pixel-art arena combat, built in Unity and playable in the browser. Rolled gear, a forge and a mastery board drive progression, with Cardano wallet integration.",
+    tags: ["Unity", "C#", "WebGL", "Cardano", "TypeScript"],
+    link: EQUIVALENCE_SHOWCASE,
+    linkLabel: "Play the showcase",
+    category: "work",
+  },
+  {
     title: "River",
     description:
       "Full-stack app for browsing what's streaming across your favorite platforms, combining scraped and external API data. React/Redux frontend with a Rails API backend and async, Promise-based data fetching.",
@@ -104,11 +117,13 @@ export const projects: Project[] = [
   },
 ];
 
+export type Bullet = string | { text: string; href: string; linkLabel: string };
+
 export type Job = {
   role: string;
   company: string;
   period: string;
-  bullets: string[];
+  bullets: Bullet[];
 };
 
 export const experience: Job[] = [
@@ -120,6 +135,11 @@ export const experience: Job[] = [
       "Built and maintain a Cardano-based NFT platform end to end — smart contracts, frontend, and infrastructure — as the sole engineer.",
       "Designed a rental contract system letting NFT holders earn yield while renters and community wallets gain eligibility for scheduled, automatically-paid on-chain prize draws.",
       "Shipped an on-demand NFT minting platform backed by an Aiken Plutus V3 minting policy with on-chain price enforcement.",
+      {
+        text: "Built Equivalence, a roguelike extraction game in Unity with pixel-art arena combat and Cardano wallet integration, playable in the browser.",
+        href: EQUIVALENCE_SHOWCASE,
+        linkLabel: "Play the showcase",
+      },
     ],
   },
   {

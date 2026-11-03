@@ -43,9 +43,23 @@ export default function ResumePage() {
                 </span>
               </div>
               <ul className="mt-2 list-disc pl-5 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                {job.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
+                {job.bullets.map((bullet) =>
+                  typeof bullet === "string" ? (
+                    <li key={bullet}>{bullet}</li>
+                  ) : (
+                    <li key={bullet.text}>
+                      {bullet.text}{" "}
+                      <a
+                        href={bullet.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium underline underline-offset-4"
+                      >
+                        {bullet.linkLabel}
+                      </a>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           ))}

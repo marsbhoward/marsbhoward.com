@@ -4,9 +4,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { site } from "@/lib/data";
 
 const links = [
-  { href: "/#about", label: "About" },
-  { href: "/#projects", label: "Projects" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/home#about", label: "About" },
+  { href: "/home#projects", label: "Projects" },
+  { href: "/home#contact", label: "Contact" },
   { href: "/resume", label: "Resume" },
 ];
 
@@ -14,7 +14,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-white/70 backdrop-blur-md dark:border-white/10 dark:bg-black/70">
       <nav className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
+        <Link href="/home" className="flex items-center gap-2.5 font-semibold tracking-tight">
           <span
             aria-hidden="true"
             className="led h-2 w-2 rounded-full bg-retro-red"

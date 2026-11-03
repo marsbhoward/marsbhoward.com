@@ -39,7 +39,7 @@ function ProjectGrid({ items }: { items: Project[] }) {
                 rel="noopener noreferrer"
                 className="underline-offset-4 hover:underline"
               >
-                Live site
+                {project.linkLabel ?? "Live site"}
               </a>
             )}
             {project.apiLink && (
