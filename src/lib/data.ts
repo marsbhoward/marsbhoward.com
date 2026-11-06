@@ -6,7 +6,7 @@ export const site = {
   phone: "(314) 313-6452",
   tagline: "I build fast, accessible web experiences.",
   bio: [
-    "I'm a full stack software engineer who builds and ships complete products, from React and Next.js frontends to on-chain smart contracts. Before going independent, I spent over four years at Mastercard, first in network operations and then as a Software Engineer in Test. There I built API regression suites with Rest Assured and the application's Splunk and Dynatrace monitoring, and tracked down a parsing defect that cut response times from 60ms to 25ms before go-live.",
+    "I'm a full stack software engineer who builds and ships complete products, from React and Next.js frontends to on-chain smart contracts. Before going independent, I spent over four years at Mastercard, first in network operations and then as a Software Engineer on a Java-intensive team. There I wrote Java test automation with Rest Assured, built the application's Splunk and Dynatrace monitoring, and tracked down a parsing defect that cut response times from 60ms to 25ms before go-live.",
     "Today I'm the founder and sole engineer behind Donada, a Cardano NFT platform live on mainnet. Holders can rent out their NFTs to earn yield, and renters and community wallets become eligible for scheduled prize draws whose winners anyone can verify on-chain. I also built Equivalence, a browser roguelike in Unity with Cardano wallet integration, using AI-assisted development with Claude Code.",
     "When I'm not building, you'll find me biking, gaming, tinkering on hobby coding projects, or indulging in general nerdery 🤓.",
   ],
@@ -17,9 +17,9 @@ export const site = {
 };
 
 export const skills = [
+  "Java",
   "TypeScript",
   "JavaScript",
-  "Java",
   "Python",
   "Ruby",
   "React",
@@ -161,15 +161,15 @@ export const experience: Job[] = [
     ],
   },
   {
-    role: "Software Engineer in Test",
+    role: "Software Engineer",
     company: "Mastercard",
     period: "Dec 2022 — Apr 2026",
     bullets: [
       "Pinpointed a parsing defect before go-live that was limiting throughput, cutting API response time from 60ms to 25ms and raising projected capacity to 10,000 TPS.",
-      "Built the application's full Splunk and Dynatrace monitoring suite: a KPI dashboard for senior leadership, a golden-signals dashboard tracking live performance against SLAs, an error dashboard mapping failure trends, and 20 alerts tuned to fire without false alarms.",
-      "Developed and enhanced automated regression suites using Rest Assured, reducing manual testing effort.",
-      "Ran functional and integration tests on distributed systems and triaged production incidents.",
-      "Contributed to CI/CD quality gates for release validation.",
+      "Built the Splunk and Dynatrace monitoring suite: a leadership KPI dashboard, a golden-signals SLA dashboard, an error-trend dashboard, and 20 alerts tuned to avoid false alarms.",
+      "Wrote Java test automation with Rest Assured in a Java-intensive codebase, reducing manual testing.",
+      "Tested changes for business case, functionality, and efficiency, and triaged production incidents.",
+      "Took part in all code reviews and Scrum calls, and contributed to CI/CD quality gates for release validation.",
     ],
   },
   {
